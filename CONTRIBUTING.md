@@ -29,6 +29,10 @@ Differentiate vendor claims, independently demonstrated behavior, and unverified
 
 Only publish information appropriate for a public repository. Do not include credentials, personal data, private infrastructure configurations, proprietary material, access tokens, or non-public logs. Avoid publishing third-party content beyond what is necessary for citation and analysis.
 
+## Licensing contributions
+
+By submitting original research writing or annotations for inclusion, contributors agree to make their contribution available under [CC BY 4.0](LICENSE-CONTENT.md). Contributions to original website code are made available under the [MIT License](LICENSE-CODE.md). Only submit material you have the rights to license; link to third-party documentation rather than copying it into the repository.
+
 ## Review and updates
 
 Open an issue to discuss a proposed finding, or submit a pull request with a structured change. Existing claim identifiers should remain stable when correcting a finding.
