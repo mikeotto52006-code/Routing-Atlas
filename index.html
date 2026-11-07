@@ -1,60 +1,143 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Routing Atlas — shared, source-backed public research on AI agents, model routing, memory and automation.">
-<title>Routing Atlas | Research Library</title>
-<style>
-:root{color-scheme:dark;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0c1220;color:#eff5ff}
-*{box-sizing:border-box}body{margin:0}header{padding:3rem 1.25rem 2rem;max-width:1080px;margin:auto}
-.eyebrow{letter-spacing:.17em;color:#72e8ce;text-transform:uppercase;font-size:.78rem;font-weight:800}
-h1{font-size:clamp(2rem,6vw,4.1rem);line-height:1.08;margin:.4rem 0}header p{max-width:700px;color:#afbdd3;line-height:1.6}
-nav{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.1rem}a{color:#7debd7}
-main{max-width:1080px;margin:auto;padding:0 1.25rem 5rem}
-.controls{background:#141e30;border:1px solid #2b3b50;border-radius:18px;padding:1rem;display:grid;grid-template-columns:minmax(0,2fr) minmax(180px,1fr);gap:.75rem}
-input,select{width:100%;padding:.85rem .95rem;border-radius:10px;border:1px solid #476075;background:#0b1424;color:#eff5ff;font:inherit}
-.meta{color:#bac7d8;margin:1.3rem 0}.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr));gap:1rem}
-article{background:#141e30;border:1px solid #2a3e54;border-radius:16px;padding:1.2rem;min-width:0}
-.tag{display:inline-block;background:#213c4b;color:#8deddc;border-radius:99px;padding:.25rem .6rem;font-size:.78rem;font-weight:700}
-article h2{font-size:1.1rem;line-height:1.35}article p{line-height:1.52;color:#d0dbe9;font-size:.94rem}
-details{border-top:1px solid #324154;padding-top:.7rem;margin-top:1rem}summary{cursor:pointer;color:#a6e9e2;font-weight:600}small{color:#abb8c9}
-footer{text-align:center;padding:2rem;color:#b5c0d0}
-@media(max-width:650px){.controls{grid-template-columns:1fr}header{padding-top:2rem}}
-</style></head><body>
-<header><div class="eyebrow">The Island · Public technical research</div><h1>Routing Atlas</h1>
-<p>One searchable home for source-backed research into local AI, agents, routing, memory, voice and automation. Check prior work before repeating research.</p>
-<nav><a href="https://github.com/mikeotto52006-code/Routing-Atlas">GitHub repository</a><a href="FINDINGS-INDEX.md">Research index</a><a href="CONTRIBUTING.md">Contribute evidence</a></nav></header>
-<main><section class="controls" aria-label="Research filters">
-<label><span class="eyebrow">Search the findings</span><input id="q" type="search" placeholder="Try Hermes, security, voice, memory..." autocomplete="off"></label>
-<label><span class="eyebrow">System</span><select id="system"><option value="">All systems</option></select></label>
-</section><p class="meta" id="status" role="status">Loading research…</p><section id="cards" class="cards" aria-label="Research findings"></section></main>
-<footer>Public technical research snapshot · Verify sources and release versions before relying on a claim.</footer>
-<script>
-"use strict";
-const q=document.getElementById("q"),sel=document.getElementById("system"),cards=document.getElementById("cards"),status=document.getElementById("status");
-let findings=[];
-function el(tag,text,className){const x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(className)x.className=className;return x}
-function render(){
- const term=q.value.trim().toLowerCase(),sys=sel.value;
- const hits=findings.filter(f=>(!sys||f.system===sys)&&(!term||[f.title,f.fact,f.system,f.dimension,f.open_question].some(v=>String(v||"").toLowerCase().includes(term))));
- cards.replaceChildren();status.textContent=hits.length+" of "+findings.length+" research findings";
- if(!hits.length){cards.append(el("p","No matching research. Try a different search."));return}
- const frag=document.createDocumentFragment();
- for(const f of hits){
-  const card=el("article");card.append(el("span",f.system,"tag"),el("h2",f.title),el("p",f.fact));
-  const details=el("details"),summary=el("summary","Evidence and open questions");details.append(summary);
-  details.append(el("p","Research area: "+f.dimension));
-  details.append(el("p","Source detail: "+f.source_detail));
-  details.append(el("p","Still unknown: "+f.open_question));
-  details.append(el("small","Inspected: "+f.date_inspected+" · Finding ID: "+f.id));
-  const source=el("p"),a=el("a","Primary source");a.href=f.source_url;a.target="_blank";a.rel="noopener noreferrer";source.append(a);
-  card.append(details,source);frag.append(card);
- }
- cards.append(frag);
-}
-fetch("./data/findings.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}).then(data=>{
- findings=Array.isArray(data.findings)?data.findings:[];
- [...new Set(findings.map(f=>f.system))].sort().forEach(s=>{const o=el("option",s);o.value=s;sel.append(o)});
- render();
-}).catch(e=>{status.textContent="Research could not be loaded: "+e.message+" — open the GitHub repository to read the findings."});
-q.addEventListener("input",render);sel.addEventListener("change",render);
-</script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f8fb">
+  <meta name="description" content="Routing Atlas is a searchable, evidence-backed research library covering AI agents, model routing, memory and automation.">
+  <title>Routing Atlas — Evidence Library</title>
+  <style>
+    :root {color-scheme:light;--bg:#f6f8fb;--surface:#fff;--ink:#142239;--muted:#64748b;--line:#e2e8f0;--accent:#0d746f;--accent-light:#e8f7f4;--navy:#0e2034;--shadow:0 7px 24px rgba(18,34,56,.045)}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+    a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+    button,input,select{font:inherit}button{cursor:pointer}
+    .wrap{max-width:1140px;margin:0 auto;padding:0 26px}
+    .top{border-bottom:1px solid var(--line);background:#fff}
+    .top .wrap{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:-.035em;font-size:1.18rem;color:var(--ink)}
+    .brandmark{width:36px;height:36px;display:grid;place-items:center;background:var(--navy);color:#fff;border-radius:10px}
+    .topnav{display:flex;gap:27px;align-items:center;font-size:.9rem;font-weight:600}
+    .topnav a{color:#405269}.topnav a:hover{color:var(--accent)}
+    .topnav .repo{padding:9px 15px;border:1px solid var(--line);border-radius:9px;color:var(--ink)}
+    .hero{background:linear-gradient(120deg,#102339 0%,#163e4e 100%);color:#fff;padding:64px 0 61px}
+    .hero-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:48px;align-items:center}
+    .eyebrow{font-size:.7rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#82ddd0}
+    h1{font-size:clamp(2.45rem,5vw,4rem);line-height:1.12;letter-spacing:-.055em;margin:12px 0 17px}
+    .hero p{max-width:670px;margin:0;color:#cadbe5;font-size:1.04rem;line-height:1.75}
+    .hero-note{border:1px solid rgba(177,219,228,.24);border-radius:16px;padding:22px;background:rgba(255,255,255,.045)}
+    .hero-note .label{font-size:.73rem;color:#afd0d9;text-transform:uppercase;letter-spacing:.12em;font-weight:700}
+    .hero-note strong{display:block;font-size:2.4rem;letter-spacing:-.07em;line-height:1.2;margin:6px 0 2px}
+    .hero-note small{color:#c7d7e1;display:block}
+    .section{padding:37px 0 80px}
+    .heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:21px}
+    .heading h2{font-size:1.5rem;line-height:1.2;letter-spacing:-.035em;margin:0}
+    .heading p{margin:7px 0 0;color:var(--muted)}
+    .snapshot{color:var(--muted);font-size:.82rem;white-space:nowrap}
+    .filters{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:17px;display:grid;grid-template-columns:minmax(0,2fr) minmax(180px,1fr) minmax(145px,.75fr);gap:13px;box-shadow:var(--shadow)}
+    .field label{display:block;margin-bottom:6px;color:#52647a;font-size:.75rem;font-weight:800;letter-spacing:.055em;text-transform:uppercase}
+    .field input,.field select{display:block;width:100%;height:45px;border:1px solid #ccd8e4;border-radius:9px;padding:0 13px;background:#fff;color:var(--ink);outline-offset:2px}
+    .field input:focus,.field select:focus{border-color:var(--accent);outline:2px solid #c2eae4}
+    .resultbar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:24px 0 14px}
+    #count{color:#53657c;font-size:.9rem}
+    .note{font-size:.76rem;color:#64748b}
+    .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:23px 24px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:13px;min-width:0}
+    .card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .pill{display:inline-block;color:#0e6c69;background:var(--accent-light);border:1px solid #d5eee9;border-radius:6px;padding:3px 9px;font-size:.75rem;font-weight:750}
+    .date{color:#75869b;font-size:.75rem;white-space:nowrap}
+    .card h3{font-size:1.12rem;line-height:1.37;letter-spacing:-.02em;margin:0}
+    .card .fact{color:#415268;margin:0;line-height:1.68;font-size:.92rem;overflow-wrap:anywhere}
+    .card .foot{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-top:auto;padding-top:13px;border-top:1px solid #edf1f5}
+    .source{font-weight:700;font-size:.85rem;white-space:nowrap}
+    .source:after{content:" ↗"}
+    details{font-size:.85rem}summary{color:#4a5f72;font-weight:600;cursor:pointer;list-style-position:inside}
+    details p{color:#4b5e73;margin:9px 0 0;overflow-wrap:anywhere}
+    .empty{background:#fff;border:1px solid var(--line);border-radius:13px;padding:32px;color:var(--muted);grid-column:1/-1}
+    footer{border-top:1px solid var(--line);padding:24px 0 35px;color:#77869a;font-size:.82rem;background:#fff}
+    footer .wrap{display:flex;justify-content:space-between;gap:12px}
+    @media(max-width:800px){.hero-grid{grid-template-columns:1fr;gap:23px}.hero-note{max-width:350px}.filters{grid-template-columns:1fr 1fr}.field:first-child{grid-column:1/-1}.cards{grid-template-columns:1fr}}
+    @media(max-width:560px){.wrap{padding:0 17px}.top .wrap{min-height:68px}.topnav{gap:10px}.topnav a:not(.repo){display:none}.hero{padding:45px 0}.hero-note{display:none}.heading{align-items:flex-start;flex-direction:column}.filters{grid-template-columns:1fr}.field:first-child{grid-column:auto}.card{padding:19px}.footer,.resultbar{flex-wrap:wrap}.snapshot{white-space:normal}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <div class="brand"><span class="brandmark" aria-hidden="true">R<span style="color:#74d9c5">.</span></span><span>Routing Atlas</span></div>
+      <nav class="topnav" aria-label="Main navigation">
+        <a href="#research">Research library</a>
+        <a href="https://github.com/mikeotto52006-code/Routing-Atlas/blob/main/CONTRIBUTING.md">Contribute</a>
+        <a class="repo" href="https://github.com/mikeotto52006-code/Routing-Atlas">View on GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">Open, source-backed research</div>
+        <h1>Evidence, organized.<br>Research, accelerated.</h1>
+        <p>A central reference library for AI systems, model routing, memory, security and automation. Explore documented findings, primary sources, and the questions that still need answers.</p>
+      </div>
+      <aside class="hero-note" aria-label="Research totals">
+        <div class="label">Published findings</div>
+        <strong id="total">—</strong>
+        <small>Primary-source references included</small>
+        <div style="margin-top:19px;border-top:1px solid rgba(177,219,228,.2);padding-top:13px"><span class="label">Research areas</span><strong style="font-size:1.5rem" id="systemsTotal">—</strong></div>
+      </aside>
+    </div>
+  </section>
+  <main id="research" class="section">
+    <div class="wrap">
+      <div class="heading">
+        <div><h2>Research library</h2><p>Search existing work before starting a new investigation.</p></div>
+        <span class="snapshot" id="snapshot">Loading research snapshot…</span>
+      </div>
+      <div class="filters" role="search" aria-label="Filter published research">
+        <div class="field"><label for="search">Search findings</label><input id="search" type="search" autocomplete="off" placeholder="Search titles, evidence, and open questions…"></div>
+        <div class="field"><label for="system">System</label><select id="system"><option value="">All systems</option></select></div>
+        <div class="field"><label for="sort">Sort by</label><select id="sort"><option value="latest">Most recent</option><option value="title">Title A–Z</option><option value="system">System A–Z</option></select></div>
+      </div>
+      <div class="resultbar"><span id="count" role="status" aria-live="polite">Loading findings…</span><span class="note">Every finding links to a primary source.</span></div>
+      <div class="cards" id="cards" aria-label="Research findings"></div>
+    </div>
+  </main>
+  <footer><div class="wrap"><span>Routing Atlas · Public research archive</span><span>Verify source versions before relying on findings.</span></div></footer>
+  <script>
+    "use strict";
+    const search=document.getElementById("search"),system=document.getElementById("system"),sort=document.getElementById("sort"),cards=document.getElementById("cards"),count=document.getElementById("count");
+    let findings=[];
+    function node(tag,content,cls){const e=document.createElement(tag);if(content!==undefined)e.textContent=content;if(cls)e.className=cls;return e}
+    function render(){
+      const term=search.value.trim().toLocaleLowerCase(),filter=system.value;
+      let rows=findings.filter(f=>(!filter||f.system===filter)&&(!term||[f.id,f.title,f.fact,f.system,f.dimension,f.open_question].some(s=>String(s||"").toLocaleLowerCase().includes(term))));
+      rows.sort((a,b)=>sort.value==="title"?a.title.localeCompare(b.title):sort.value==="system"?a.system.localeCompare(b.system)||a.title.localeCompare(b.title):b.date_inspected.localeCompare(a.date_inspected)||a.title.localeCompare(b.title));
+      count.textContent=rows.length+" of "+findings.length+" findings";cards.replaceChildren();
+      if(!rows.length){cards.append(node("div","No findings match these filters. Try a different search.","empty"));return}
+      const fragment=document.createDocumentFragment();
+      for(const f of rows){
+        const card=node("article",undefined,"card"),top=node("div",undefined,"card-top");
+        top.append(node("span",f.system,"pill"),node("time",f.date_inspected,"date"));top.lastChild.dateTime=f.date_inspected;
+        card.append(top,node("h3",f.title),node("p",f.fact,"fact"));
+        const details=node("details"),summary=node("summary","Research details");
+        details.append(summary,node("p","Category: "+f.dimension),node("p","Source: "+f.source_detail),node("p","Open question: "+f.open_question));
+        const foot=node("div",undefined,"foot"),link=node("a","Primary source","source");
+        link.href=f.source_url;link.target="_blank";link.rel="noopener noreferrer";
+        foot.append(details,link);card.append(foot);fragment.append(card);
+      }
+      cards.append(fragment);
+    }
+    fetch("./data/findings.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(data=>{
+      findings=Array.isArray(data.findings)?data.findings:[];
+      document.getElementById("total").textContent=findings.length.toLocaleString();
+      const names=[...new Set(findings.map(f=>f.system))].sort((a,b)=>a.localeCompare(b));
+      document.getElementById("systemsTotal").textContent=names.length.toLocaleString();
+      document.getElementById("snapshot").textContent="Snapshot: "+(data.exported_date||"date unavailable");
+      for(const name of names){const opt=node("option",name);opt.value=name;system.append(opt)}
+      render();
+    }).catch(err=>{count.textContent="Unable to load research";cards.append(node("div","Research data could not be loaded. Read findings directly on GitHub.","empty"));});
+    search.addEventListener("input",render);system.addEventListener("change",render);sort.addEventListener("change",render);
+  </script>
+</body>
+</html>
