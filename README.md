@@ -35,6 +35,15 @@ The initial public dataset contains **45 findings across 15 research areas**, ex
 
 The published dataset is readable in JSON and designed for research review, citation, and reuse. Updates to this repository are not currently synchronized automatically with the originating research workspace.
 
+## Licensing
+
+Routing Atlas uses separate licenses for its original published materials:
+
+- **Research, structured findings, and documentation:** [CC BY 4.0](LICENSE-CONTENT.md), allowing reuse and adaptation with attribution.
+- **Original website code (HTML, CSS, and JavaScript):** [MIT License](LICENSE-CODE.md), allowing reuse and modification with the license notice.
+
+These licenses apply only to material contributors have the right to license. **They do not claim ownership of public facts, knowledge, or third-party source material.** The original sources retain their respective rights.
+
 ## Contributing
 
 Corrections, newer primary sources, and additional research are welcome through GitHub issues or pull requests. See [CONTRIBUTING.md](CONTRIBUTING.md) for the evidence format and publication guidelines.
