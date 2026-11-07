@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Routing Atlas — shared, source-backed public research on AI agents, model routing, memory and automation.">
+<title>Routing Atlas | Research Library</title>
+<style>
+:root{color-scheme:dark;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0c1220;color:#eff5ff}
+*{box-sizing:border-box}body{margin:0}header{padding:3rem 1.25rem 2rem;max-width:1080px;margin:auto}
+.eyebrow{letter-spacing:.17em;color:#72e8ce;text-transform:uppercase;font-size:.78rem;font-weight:800}
+h1{font-size:clamp(2rem,6vw,4.1rem);line-height:1.08;margin:.4rem 0}header p{max-width:700px;color:#afbdd3;line-height:1.6}
+nav{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.1rem}a{color:#7debd7}
+main{max-width:1080px;margin:auto;padding:0 1.25rem 5rem}
+.controls{background:#141e30;border:1px solid #2b3b50;border-radius:18px;padding:1rem;display:grid;grid-template-columns:minmax(0,2fr) minmax(180px,1fr);gap:.75rem}
+input,select{width:100%;padding:.85rem .95rem;border-radius:10px;border:1px solid #476075;background:#0b1424;color:#eff5ff;font:inherit}
+.meta{color:#bac7d8;margin:1.3rem 0}.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr));gap:1rem}
+article{background:#141e30;border:1px solid #2a3e54;border-radius:16px;padding:1.2rem;min-width:0}
+.tag{display:inline-block;background:#213c4b;color:#8deddc;border-radius:99px;padding:.25rem .6rem;font-size:.78rem;font-weight:700}
+article h2{font-size:1.1rem;line-height:1.35}article p{line-height:1.52;color:#d0dbe9;font-size:.94rem}
+details{border-top:1px solid #324154;padding-top:.7rem;margin-top:1rem}summary{cursor:pointer;color:#a6e9e2;font-weight:600}small{color:#abb8c9}
+footer{text-align:center;padding:2rem;color:#b5c0d0}
+@media(max-width:650px){.controls{grid-template-columns:1fr}header{padding-top:2rem}}
+</style></head><body>
+<header><div class="eyebrow">The Island · Public technical research</div><h1>Routing Atlas</h1>
+<p>One searchable home for source-backed research into local AI, agents, routing, memory, voice and automation. Check prior work before repeating research.</p>
+<nav><a href="https://github.com/mikeotto52006-code/Routing-Atlas">GitHub repository</a><a href="FINDINGS-INDEX.md">Research index</a><a href="CONTRIBUTING.md">Contribute evidence</a></nav></header>
+<main><section class="controls" aria-label="Research filters">
+<label><span class="eyebrow">Search the findings</span><input id="q" type="search" placeholder="Try Hermes, security, voice, memory..." autocomplete="off"></label>
+<label><span class="eyebrow">System</span><select id="system"><option value="">All systems</option></select></label>
+</section><p class="meta" id="status" role="status">Loading research…</p><section id="cards" class="cards" aria-label="Research findings"></section></main>
+<footer>Public technical research snapshot · Verify sources and release versions before relying on a claim.</footer>
+<script>
+"use strict";
+const q=document.getElementById("q"),sel=document.getElementById("system"),cards=document.getElementById("cards"),status=document.getElementById("status");
+let findings=[];
+function el(tag,text,className){const x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(className)x.className=className;return x}
+function render(){
+ const term=q.value.trim().toLowerCase(),sys=sel.value;
+ const hits=findings.filter(f=>(!sys||f.system===sys)&&(!term||[f.title,f.fact,f.system,f.dimension,f.open_question].some(v=>String(v||"").toLowerCase().includes(term))));
+ cards.replaceChildren();status.textContent=hits.length+" of "+findings.length+" research findings";
+ if(!hits.length){cards.append(el("p","No matching research. Try a different search."));return}
+ const frag=document.createDocumentFragment();
+ for(const f of hits){
+  const card=el("article");card.append(el("span",f.system,"tag"),el("h2",f.title),el("p",f.fact));
+  const details=el("details"),summary=el("summary","Evidence and open questions");details.append(summary);
+  details.append(el("p","Research area: "+f.dimension));
+  details.append(el("p","Source detail: "+f.source_detail));
+  details.append(el("p","Still unknown: "+f.open_question));
+  details.append(el("small","Inspected: "+f.date_inspected+" · Finding ID: "+f.id));
+  const source=el("p"),a=el("a","Primary source");a.href=f.source_url;a.target="_blank";a.rel="noopener noreferrer";source.append(a);
+  card.append(details,source);frag.append(card);
+ }
+ cards.append(frag);
+}
+fetch("./data/findings.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}).then(data=>{
+ findings=Array.isArray(data.findings)?data.findings:[];
+ [...new Set(findings.map(f=>f.system))].sort().forEach(s=>{const o=el("option",s);o.value=s;sel.append(o)});
+ render();
+}).catch(e=>{status.textContent="Research could not be loaded: "+e.message+" — open the GitHub repository to read the findings."});
+q.addEventListener("input",render);sel.addEventListener("change",render);
+</script></body></html>
