@@ -20,7 +20,7 @@ This is a **public mirror of research from the existing Routing Atlas**, not a n
 
 ## Privacy
 
-Public technical research only. No private Island-Home content, device inventory, credentials, home lab addresses, network configuration, camera details, employer data, or business information. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Public technical research only. Do not publish credentials, private infrastructure details, identifying information, proprietary materials, or other non-public data. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Status
 
